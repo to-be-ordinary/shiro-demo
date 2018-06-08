@@ -17,15 +17,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sun.shiro.demo.data.BasicRole;
 import com.sun.shiro.demo.data.BasicUser;
+import com.sun.shiro.demo.service.IPermissionService;
 import com.sun.shiro.demo.service.IRoleService;
 import com.sun.shiro.demo.service.IUserService;
 
 public class ShiroTempUtil extends AuthorizingRealm{
 
 	@Autowired
-	public IUserService userService;
+	private IUserService userService;
 	@Autowired
-	public IRoleService roleService;
+	private IRoleService roleService;
+	@Autowired
+	private IPermissionService permissionService;
 	
 	
 	@Override
@@ -36,9 +39,12 @@ public class ShiroTempUtil extends AuthorizingRealm{
 		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 		Set<String> setRoles = new HashSet<>();
 		for (BasicRole role : roles) {
-			setRoles.add(role.getRoleAcount());
+			setRoles.add(role.getRoleAccount());
 		}
 		info.setRoles(setRoles);
+		Set<String> permissions = permissionService.getPermissionStrByAccount(user.getAccount());
+		
+		info.addStringPermissions(permissions);
 		return info;
 	}
 

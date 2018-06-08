@@ -6,8 +6,11 @@ import java.util.Map;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,23 +34,18 @@ public class ShiroConfiguration {
 	}
 	
 	@Bean
-	public ShiroFilterFactoryBean factoryBean() {
+	public ShiroFilterFactoryBean factoryBean(SecurityManager securityManager) {
 		
 		ShiroFilterFactoryBean factory = new ShiroFilterFactoryBean();
 		
-		factory.setSecurityManager(securityManager());
+		factory.setSecurityManager(securityManager);
 		
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-		filterChainDefinitionMap.put("/", "anon");
 		filterChainDefinitionMap.put("/login", "anon");
 		filterChainDefinitionMap.put("/loginCheck", "anon");
-		filterChainDefinitionMap.put("/logout", "anon");
-		filterChainDefinitionMap.put("/static/**", "anon");
 		filterChainDefinitionMap.put("/*", "authc");
 		factory.setFilterChainDefinitionMap(filterChainDefinitionMap);
-		
 		factory.setLoginUrl("/login");
-		factory.setSuccessUrl("/getCurrentUser");
 		return factory;
 	}
 	
@@ -61,4 +59,26 @@ public class ShiroConfiguration {
 		
 		return matcher;
 	}
+	
+	@Bean
+	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+		
+		LifecycleBeanPostProcessor processor = new LifecycleBeanPostProcessor();
+		return processor;
+	}
+	
+	@Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager);
+        return advisor;
+	}
+	
+	//和授权相关
+	@Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
+        proxyCreator.setProxyTargetClass(true);
+        return proxyCreator;
+    }
 }

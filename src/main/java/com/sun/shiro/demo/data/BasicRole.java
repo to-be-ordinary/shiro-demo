@@ -6,7 +6,7 @@ public class BasicRole {
 	
 	private String roleName;
 	
-	private String roleAcount;
+	private String roleAccount;
 
 	public int getId() {
 		return id;
@@ -24,13 +24,15 @@ public class BasicRole {
 		this.roleName = roleName;
 	}
 
-	public String getRoleAcount() {
-		return roleAcount;
+	public String getRoleAccount() {
+		return roleAccount;
 	}
 
-	public void setRoleAcount(String roleAcount) {
-		this.roleAcount = roleAcount;
+	public void setRoleAccount(String roleAccount) {
+		this.roleAccount = roleAccount;
 	}
+
+	
 	
 	
 }
